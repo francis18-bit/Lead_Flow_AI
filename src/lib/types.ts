@@ -15,7 +15,7 @@ export interface BackendResponse {
   action: ActionType;
   leadScore: number;
   lead: Lead;
-  calendarLink?: string;
+  calendarLink: string | null;
 }
 
 export interface Message {
@@ -23,5 +23,5 @@ export interface Message {
   role: 'user' | 'assistant';
   content: string;
   action?: ActionType;
-  calendarLink?: string;
+  calendarLink?: string | null;
 }
