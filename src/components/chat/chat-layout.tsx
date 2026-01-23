@@ -14,7 +14,7 @@ export default function ChatLayout() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState('');
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Generate a stable user ID for the session on the client
@@ -32,12 +32,7 @@ export default function ChatLayout() {
 
   useEffect(() => {
     // Scroll to the bottom when new messages are added
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTo({
-        top: scrollAreaRef.current.scrollHeight,
-        behavior: 'smooth',
-      });
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,12 +78,13 @@ export default function ChatLayout() {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <ScrollArea className="flex-1" ref={scrollAreaRef}>
+      <ScrollArea className="flex-1">
         <div className="space-y-6 p-4">
           {messages.map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))}
           {isLoading && <ChatMessage isLoading />}
+          <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
       <div className="border-t bg-card p-4">
