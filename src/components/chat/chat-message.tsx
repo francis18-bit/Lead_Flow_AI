@@ -68,7 +68,7 @@ export default function ChatMessage({ message, isLoading }: ChatMessageProps) {
           <Button asChild variant="accent" className="bg-accent hover:bg-accent/90">
             <Link href={message.calendarLink} target="_blank" rel="noopener noreferrer">
               <Calendar className="mr-2 h-4 w-4" />
-              Book a meeting
+              Book a call
             </Link>
           </Button>
         )}

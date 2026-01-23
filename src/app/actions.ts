@@ -2,7 +2,7 @@
 
 import { type BackendResponse } from '@/lib/types';
 
-const WEBHOOK_URL = "https://mrjeffrey.app.n8n.cloud/webhook-test/sales";
+const WEBHOOK_URL = "https://mrjeffrey.app.n8n.cloud/webhook/sales";
 
 export async function sendMessage(userId: string, message: string): Promise<BackendResponse | { error: string }> {
   try {
@@ -26,7 +26,7 @@ export async function sendMessage(userId: string, message: string): Promise<Back
 
     const data = await response.json();
 
-    if (!data || !Array.isArray(data) || data.length === 0) {
+    if (!Array.isArray(data) || data.length === 0) {
         console.error('Malformed response:', data);
         return { error: 'Sorry — something went wrong. Please try again.' };
     }
