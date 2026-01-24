@@ -2,7 +2,7 @@
 
 import { type BackendResponse } from '@/lib/types';
 
-const WEBHOOK_URL = "https://mrjeffrey.app.n8n.cloud/webhook/sales";
+const WEBHOOK_URL = "https://mrjeffrey.app.n8n.cloud/webhook-test/sales";
 
 export async function sendMessage(
   userId: string,
