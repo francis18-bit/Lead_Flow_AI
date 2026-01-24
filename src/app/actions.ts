@@ -2,15 +2,16 @@
 
 import { type BackendResponse } from '@/lib/types';
 
-const WEBHOOK_URL = "https://mrjeffrey.app.n8n.cloud/webhook/sales";
+const WEBHOOK_URL = "https://mrjeffrey.app.n8n.cloud/webhook-test/sales";
 
-export async function sendMessage(userId: string, message: string): Promise<BackendResponse | { error: string }> {
+export async function sendMessage(
+  userId: string,
+  message: string
+): Promise<BackendResponse | { error: string }> {
   try {
     const response = await fetch(WEBHOOK_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         userId,
         channel: 'website',
@@ -20,19 +21,28 @@ export async function sendMessage(userId: string, message: string): Promise<Back
     });
 
     if (!response.ok) {
-      console.error('API Error:', response.status, response.statusText);
+      const errText = await response.text();
+      console.error('API Error:', response.status, response.statusText, errText);
       return { error: 'Sorry — something went wrong. Please try again.' };
     }
 
     const data = await response.json();
 
-    if (!Array.isArray(data) || data.length === 0) {
-        console.error('Malformed response:', data);
-        return { error: 'Sorry — something went wrong. Please try again.' };
+    // Accept both array and object shapes
+    const first = Array.isArray(data) ? data[0] : data;
+
+    if (!first) {
+      console.error('Empty response:', data);
+      return { error: 'Sorry — something went wrong. Please try again.' };
     }
 
-    return data[0] as BackendResponse;
+    // ✅ Unwrap n8n item shape: { json: {...} }
+    const payload = first.json ?? first;
 
+    // Optional: log once to confirm structure
+    // console.log('n8n payload:', payload);
+
+    return payload as BackendResponse;
   } catch (error) {
     console.error('Fetch Error:', error);
     return { error: 'Sorry — something went wrong. Please try again.' };
