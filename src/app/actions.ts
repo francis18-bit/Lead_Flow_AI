@@ -2,7 +2,7 @@
 
 import { type BackendResponse } from '@/lib/types';
 
-const WEBHOOK_URL = "https://mrjeffrey.app.n8n.cloud/webhook/sales";
+const WEBHOOK_URL = "https://eppionn8nproduction.eppionventures.ai/webhook/business-hub";
 
 export async function sendMessage(
   userId: string,
@@ -28,7 +28,7 @@ export async function sendMessage(
 
     const data = await response.json();
 
-    // Accept both array and object shapes
+    // Accept both array and object shapes as per contract
     const first = Array.isArray(data) ? data[0] : data;
 
     if (!first) {
@@ -36,11 +36,8 @@ export async function sendMessage(
       return { error: 'Sorry — something went wrong. Please try again.' };
     }
 
-    // ✅ Unwrap n8n item shape: { json: {...} }
+    // Unwrap n8n item shape if present: { json: {...} }
     const payload = first.json ?? first;
-
-    // Optional: log once to confirm structure
-    // console.log('n8n payload:', payload);
 
     return payload as BackendResponse;
   } catch (error) {
