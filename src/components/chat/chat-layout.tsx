@@ -18,7 +18,12 @@ export default function ChatLayout() {
 
   useEffect(() => {
     // Generate a stable user ID for the session on the client
-    setUserId(crypto.randomUUID());
+    // Add fallback for environments where crypto.randomUUID might be unavailable
+    const id = typeof crypto.randomUUID === 'function' 
+      ? crypto.randomUUID() 
+      : Math.random().toString(36).substring(2, 11);
+    
+    setUserId(id);
 
     // Set an initial welcome message
     setMessages([
@@ -45,7 +50,7 @@ export default function ChatLayout() {
     if (!userMessage || isLoading || !userId) return;
 
     const newUserMessage: Message = {
-      id: crypto.randomUUID(),
+      id: typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : Math.random().toString(36).substring(2, 11),
       role: 'user',
       content: userMessage,
     };
@@ -56,16 +61,17 @@ export default function ChatLayout() {
 
     const response = await sendMessage(userId, userMessage);
     
-    if ('error' in response) {
+    // Check if the response is an error object returned by the server action
+    if (response && 'error' in response) {
       const errorMessage: Message = {
-        id: crypto.randomUUID(),
+        id: typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : Math.random().toString(36).substring(2, 11),
         role: 'assistant',
         content: response.error,
       };
       setMessages((prev) => [...prev, errorMessage]);
-    } else {
+    } else if (response) {
       const assistantMessage: Message = {
-        id: crypto.randomUUID(),
+        id: typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : Math.random().toString(36).substring(2, 11),
         role: 'assistant',
         content: response.output,
         action: response.action,

@@ -28,7 +28,7 @@ export async function sendMessage(
 
     const data = await response.json();
 
-    // Accept both array and object shapes as per contract
+    // The API contract expects an array or a single object
     const first = Array.isArray(data) ? data[0] : data;
 
     if (!first) {
@@ -39,7 +39,20 @@ export async function sendMessage(
     // Unwrap n8n item shape if present: { json: {...} }
     const payload = first.json ?? first;
 
-    return payload as BackendResponse;
+    // Ensure we return a structured object to prevent crashes on the client
+    // if the webhook returns unexpected data types like strings or null
+    if (typeof payload !== 'object' || payload === null) {
+      console.error('Invalid payload shape:', payload);
+      return { error: 'Sorry — something went wrong. Please try again.' };
+    }
+
+    return {
+      output: payload.output || 'No response received from assistant.',
+      action: payload.action || 'NURTURE',
+      leadScore: Number(payload.leadScore) || 0,
+      lead: payload.lead || {},
+      calendarLink: payload.calendarLink || null,
+    };
   } catch (error) {
     console.error('Fetch Error:', error);
     return { error: 'Sorry — something went wrong. Please try again.' };
