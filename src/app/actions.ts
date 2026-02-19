@@ -4,10 +4,10 @@ import { type BackendResponse } from '@/lib/types';
 
 const WEBHOOK_URL = "https://eppionn8nproduction.eppionventures.ai/webhook/business-hub";
 
-// Server action files can only export async functions. 
-// maxDuration is handled as a segment config, but here it causes a build error.
-const maxDuration = 60; 
-
+/**
+ * Sends a message to the n8n webhook and returns the assistant's response.
+ * Note: maxDuration cannot be exported from a 'use server' file when imported by client components.
+ */
 export async function sendMessage(
   userId: string,
   message: string
