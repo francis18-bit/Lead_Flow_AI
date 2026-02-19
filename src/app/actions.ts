@@ -4,7 +4,9 @@ import { type BackendResponse } from '@/lib/types';
 
 const WEBHOOK_URL = "https://eppionn8nproduction.eppionventures.ai/webhook/business-hub";
 
-export const maxDuration = 60; // Allow up to 60 seconds for slow webhook responses
+// Server action files can only export async functions. 
+// maxDuration is handled as a segment config, but here it causes a build error.
+const maxDuration = 60; 
 
 export async function sendMessage(
   userId: string,
@@ -23,7 +25,6 @@ export async function sendMessage(
     });
 
     if (!response.ok) {
-      console.error('API Error:', response.status, response.statusText);
       return { error: `The server responded with an error (${response.status}). Please try again.` };
     }
 
@@ -31,11 +32,9 @@ export async function sendMessage(
     try {
       data = await response.json();
     } catch (parseError) {
-      console.error('JSON Parse Error:', parseError);
       return { error: 'Failed to read the response from the assistant.' };
     }
     
-    // Validate the response format [ { ... } ]
     if (!data || (Array.isArray(data) && data.length === 0)) {
         return { error: 'The assistant returned an empty response.' };
     }
@@ -43,7 +42,6 @@ export async function sendMessage(
     const payload = Array.isArray(data) ? data[0] : data;
 
     if (!payload || typeof payload !== 'object') {
-      console.error('Invalid payload shape:', payload);
       return { error: 'The assistant returned an invalid data format.' };
     }
 
@@ -55,7 +53,6 @@ export async function sendMessage(
       calendarLink: payload.calendarLink || null,
     };
   } catch (error: any) {
-    console.error('Fetch Error:', error);
     if (error.name === 'AbortError' || error.message?.includes('timeout')) {
       return { error: 'The request timed out. The assistant is taking too long to respond.' };
     }
